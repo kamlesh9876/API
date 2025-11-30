@@ -1,265 +1,245 @@
-# APIs Collection
+# Project: My API Collection (FastAPI example)
+# The document below contains the full code for a minimal but production-ready FastAPI project.
+# Copy each section into the corresponding file path in your repository.
 
-A collection of production-ready REST APIs built with FastAPI and Python.
+### FILE: README.md
+```
+# My API Collection - FastAPI Example
 
-## 🚀 Available APIs
-
-### 1. Myth Buster API
-**Port**: 8000  
-**Purpose**: Debunk and verify common myths and misconceptions
-
-**Features**:
-- CRUD operations for myths
-- Search functionality
-- Category filtering
-- Evidence and source tracking
-- Truth status verification
-
-**Quick Start**:
-```bash
-cd myth_buster_api
-pip install -r requirements.txt
-python app.py
+A minimal FastAPI-based API repository ready for GitHub. Includes health and code-explain endpoints, tests, Docker support, and a clear structure for extension.
 ```
 
-**Documentation**: http://localhost:8000/docs
+### FILE: .gitignore
+```
+__pycache__/
+.env
+.venv/
+*.pyc
+.DS_Store
+instance/
+.envrc
 
----
+# Docker
+docker-compose.override.yml
 
-### 2. DevOps Analytics API
-**Port**: 8001  
-**Purpose**: Comprehensive DevOps monitoring and analytics
-
-**Features**:
-- Deployment tracking and analytics
-- CI/CD pipeline performance monitoring
-- Alert management with severity levels
-- System health monitoring
-- Metrics collection and trends
-- Analytics dashboard
-
-**Quick Start**:
-```bash
-cd devops_analytics_api
-pip install -r requirements.txt
-python app.py
+# VSCode
+.vscode/
 ```
 
-**Documentation**: http://localhost:8001/docs
-
----
-
-## 🛠️ Technology Stack
-
-- **Backend**: FastAPI (Python)
-- **Validation**: Pydantic
-- **Server**: Uvicorn
-- **Documentation**: Auto-generated Swagger/OpenAPI
-- **CORS**: Enabled for cross-origin requests
-
-## 📋 Prerequisites
-
-- Python 3.7+
-- pip package manager
-
-## 🚀 Quick Setup
-
-1. **Clone the repository**:
-```bash
-git clone https://github.com/kamlesh9876/API.git
-cd API
+### FILE: requirements.txt
+```
+fastapi==0.95.2
+uvicorn[standard]==0.22.0
+pydantic==1.10.11
+python-multipart==0.0.6
+pytest==7.4.0
+httpx==0.24.0
 ```
 
-2. **Install dependencies for each API**:
-```bash
-# For Myth Buster API
-cd myth_buster_api
-pip install -r requirements.txt
+### FILE: Dockerfile
+```
+FROM python:3.11-slim
+WORKDIR /app
 
-# For DevOps Analytics API  
-cd ../devops_analytics_api
-pip install -r requirements.txt
+# system deps for some libraries (if needed)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . /app
+EXPOSE 8000
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 ```
 
-3. **Run the APIs**:
-```bash
-# Terminal 1 - Myth Buster API
-cd myth_buster_api
-python app.py
-
-# Terminal 2 - DevOps Analytics API
-cd devops_analytics_api
-python app.py
+### FILE: app/main.py
 ```
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-## 📚 API Documentation
+from app.api.v1.health import router as health_router
+from app.api.v1.explain import router as explain_router
 
-Each API includes comprehensive interactive documentation:
+app = FastAPI(
+    title="My API Collection",
+    description="Example FastAPI project for portfolio and learning",
+    version="0.1.0",
+)
 
-- **Myth Buster API**: http://localhost:8000/docs
-- **DevOps Analytics API**: http://localhost:8001/docs
-
-Features of the documentation:
-- Interactive API testing
-- Request/response examples
-- Parameter descriptions
-- Authentication info (if applicable)
-
-## 🔧 Configuration
-
-### Port Configuration
-- Myth Buster API: Port 8000
-- DevOps Analytics API: Port 8001
-
-Both APIs can run simultaneously without conflicts.
-
-### CORS Configuration
-Both APIs are configured with permissive CORS settings for development. For production deployment, update the CORS middleware configuration in `app.py`:
-
-```python
+# CORS (adjust origins as needed)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://yourdomain.com"],  # Restrict in production
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# include routers
+app.include_router(health_router, prefix="/api/v1")
+app.include_router(explain_router, prefix="/api/v1")
+
+
+@app.get('/')
+async def root():
+    return {"message": "Welcome to My API Collection", "version": "0.1.0"}
 ```
 
-## 🧪 Testing
+### FILE: app/api/v1/health.py
+```
+from fastapi import APIRouter
+from pydantic import BaseModel
+from datetime import datetime
 
-### Using curl
+router = APIRouter()
 
-**Myth Buster API Examples**:
-```bash
-# Get all myths
-curl http://localhost:8000/myths
+class HealthResponse(BaseModel):
+    status: str
+    message: str
+    timestamp: str
 
-# Get only false myths
-curl http://localhost:8000/myths?is_true=false
-
-# Search myths
-curl http://localhost:8000/myths/search?q=brain
+@router.get('/health', response_model=HealthResponse, tags=['Health'])
+async def health():
+    return HealthResponse(status='ok', message='API is running successfully', timestamp=datetime.utcnow().isoformat() + 'Z')
 ```
 
-**DevOps Analytics API Examples**:
-```bash
-# Get all deployments
-curl http://localhost:8001/deployments
+### FILE: app/models.py
+```
+from pydantic import BaseModel
+from typing import Optional, List
 
-# Get dashboard data
-curl http://localhost:8001/dashboard
+class ExplainRequest(BaseModel):
+    language: str
+    code: str
+    detail_level: Optional[str] = 'short'  # 'short' or 'detailed'
 
-# Get system health
-curl http://localhost:8001/health
+class ExplainResponse(BaseModel):
+    language: str
+    explanation: str
+    tips: Optional[List[str]] = []
 ```
 
-### Using Python requests
-```python
-import requests
+### FILE: app/services/explainer.py
+```
+# Simple explainer service for Python code using builtin ast
+import ast
+from typing import Tuple, List
 
-# Test Myth Buster API
-response = requests.get("http://localhost:8000/myths")
-print(response.json())
 
-# Test DevOps Analytics API
-response = requests.get("http://localhost:8001/dashboard")
-print(response.json())
+def explain_python_code(code: str, detail: str = 'short') -> Tuple[str, List[str]]:
+    """
+    Very simple rule-based explanation for Python code.
+    Returns (explanation_text, tips_list)
+    """
+    tips = []
+    try:
+        tree = ast.parse(code)
+    except SyntaxError as e:
+        return (f"Unable to parse Python code: {e}", ["Check for syntax errors"]) 
+
+    # Provide a very short explanation by inspecting top-level nodes
+    descriptions = []
+    for node in tree.body:
+        if isinstance(node, ast.FunctionDef):
+            args = [a.arg for a in node.args.args]
+            desc = f"Function `{node.name}` with parameters ({', '.join(args)})"
+            # check for return in body
+            has_return = any(isinstance(n, ast.Return) for n in ast.walk(node))
+            desc += "; returns a value" if has_return else "; no explicit return"
+            descriptions.append(desc)
+            if not ast.get_docstring(node):
+                tips.append(f"Add a docstring to function `{node.name}`")
+        elif isinstance(node, ast.ClassDef):
+            descriptions.append(f"Class `{node.name}` defined")
+            if not ast.get_docstring(node):
+                tips.append(f"Add a docstring to class `{node.name}`")
+        elif isinstance(node, ast.Assign):
+            targets = [t.id for t in node.targets if isinstance(t, ast.Name)]
+            descriptions.append(f"Assignment to {', '.join(targets)}")
+
+    if not descriptions:
+        descriptions.append("No top-level functions, classes, or assignments detected.")
+
+    if detail == 'short':
+        explanation = ' | '.join(descriptions)
+    else:
+        # Detailed: give AST dump summary (shortened)
+        explanation = 'Detailed view: ' + ' | '.join(descriptions)
+        explanation += ' -- parsed AST nodes: ' + ','.join([type(n).__name__ for n in ast.walk(tree)][:10])
+
+    # generic tips
+    if 'def ' in code and 'type(' not in code:
+        tips.append('Consider adding type hints for function parameters and returns')
+
+    return (explanation, tips)
 ```
 
-## 📊 Sample Data
+### FILE: app/api/v1/explain.py
+```
+from fastapi import APIRouter, HTTPException
+from app.models import ExplainRequest, ExplainResponse
+from app.services.explainer import explain_python_code
 
-Both APIs include realistic sample data for testing and demonstration:
+router = APIRouter()
 
-### Myth Buster API
-- 3 sample myths covering different categories
-- Evidence and sources for each myth
-- Truth status verification
+@router.post('/explain', response_model=ExplainResponse, tags=['Explain'])
+async def explain(req: ExplainRequest):
+    lang = req.language.lower().strip()
+    if lang not in ('python', 'py'):
+        raise HTTPException(status_code=400, detail='Only Python is supported in this demo')
 
-### DevOps Analytics API
-- Sample deployments (success/failed)
-- Pipeline executions with stages
-- Alerts with different severity levels
-- System health metrics
-- Performance metrics
+    explanation, tips = explain_python_code(req.code, req.detail_level)
 
-## 🚀 Deployment
-
-### Docker (Recommended)
-Create a `Dockerfile` for each API:
-
-```dockerfile
-FROM python:3.9-slim
-
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
-COPY . .
-EXPOSE 8000
-
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+    return ExplainResponse(language='python', explanation=explanation, tips=tips)
 ```
 
-### Cloud Platforms
-These APIs can be deployed on:
-- **AWS Lambda** (with API Gateway)
-- **Google Cloud Functions**
-- **Azure Functions**
-- **Heroku**
-- **DigitalOcean App Platform**
-- **Railway**
-- **Render**
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Make your changes
-4. Commit: `git commit -m "Add feature description"`
-5. Push: `git push origin feature-name`
-6. Submit a pull request
-
-## 📝 Project Structure
-
+### FILE: tests/test_health.py
 ```
-API/
-├── README.md                    # This file
-├── myth_buster_api/            # Myth Buster API
-│   ├── app.py                  # Main FastAPI application
-│   ├── requirements.txt        # Python dependencies
-│   └── README.md              # API-specific documentation
-└── devops_analytics_api/       # DevOps Analytics API
-    ├── app.py                  # Main FastAPI application
-    ├── requirements.txt        # Python dependencies
-    └── README.md              # API-specific documentation
+from fastapi.testclient import TestClient
+from app.main import app
+
+client = TestClient(app)
+
+
+def test_health():
+    r = client.get('/api/v1/health')
+    assert r.status_code == 200
+    body = r.json()
+    assert body['status'] == 'ok'
+    assert 'timestamp' in body
 ```
 
-## 🐛 Troubleshooting
+### FILE: tests/test_explain.py
+```
+from fastapi.testclient import TestClient
+from app.main import app
 
-### Common Issues
+client = TestClient(app)
 
-1. **Port already in use**:
-   - Change the port in `app.py`: `uvicorn.run(app, host="0.0.0.0", port=8002)`
 
-2. **Module not found**:
-   - Ensure you're in the correct directory
-   - Install dependencies: `pip install -r requirements.txt`
+def test_explain_simple_function():
+    payload = {
+        "language": "python",
+        "code": "def add(a, b):\n    return a + b",
+        "detail_level": "short"
+    }
+    r = client.post('/api/v1/explain', json=payload)
+    assert r.status_code == 200
+    body = r.json()
+    assert body['language'] == 'python'
+    assert 'Function `add`' in body['explanation']
+```
 
-3. **CORS errors**:
-   - Check your frontend is making requests to the correct port
-   - Verify CORS configuration in `app.py`
+### FILE: run_local.sh
+```
+#!/usr/bin/env bash
+uvicorn app.main:app --reload --port 8000
+```
 
-## 📄 License
-
-This project is licensed under the MIT License - see the individual API README files for details.
-
-## 📞 Support
-
-For questions, issues, or contributions:
-- Create an issue on GitHub: https://github.com/kamlesh9876/API/issues
-- Check the API-specific documentation in each subfolder
-
----
-
-**Built with ❤️ using FastAPI**
+### NOTES
+```
+- This is a starter template focused on clarity and portability.
+- Extend services/explainer.py to add support for other languages (JS/Java) using external parsers.
+- Add authentication, rate-limiting, caching (Redis), logging, metrics, and CI for production.
