@@ -1,6 +1,6 @@
 # API Collection - Comprehensive FastAPI Projects
 
-A comprehensive collection of 32 unique APIs built with FastAPI, covering advanced technologies including AR/VR, AI, quantum computing, drone control, biometric authentication, blockchain, IoT, and more.
+A comprehensive collection of 40 unique APIs built with FastAPI, covering advanced technologies including AR/VR, AI, quantum computing, drone control, biometric authentication, blockchain, IoT, and more.
 
 ## 🚀 Overview
 
@@ -24,28 +24,35 @@ This repository contains a diverse set of production-ready APIs designed for var
 - **Real-time Collaboration API** - WebSocket-based document editing
 - **Chat Messaging API** - Real-time messaging with rooms
 - **Voice Transcription API** - Audio-to-text with multiple languages
+- **Email Service API** - Transactional emails, templates, campaigns
+- **SMS Gateway API** - Text messaging, OTP verification, bulk SMS
 
 ### 🛡️ Security & Authentication
 - **Authentication JWT API** - JWT-based authentication system
 - **Blockchain Monitoring API** - Transaction monitoring and alerts
 - **Content Moderation API** - AI-powered content filtering
+- **Data Validation API** - Input validation, schema validation, file validation
 
 ### 💼 Business & E-commerce
 - **E-commerce API** - Product catalog, orders, payments
 - **Payment Wallet API** - Digital wallet transactions
 - **Book Library API** - Library management system
 - **Expense Tracker API** - Personal expense management
+- **Currency Exchange API** - Real-time exchange rates, portfolio tracking
 
 ### 📊 Data & Analytics
 - **Sentiment Analysis API** - Text sentiment analysis
 - **News Classification API** - News categorization
 - **DevOps Analytics API** - DevOps metrics and monitoring
 - **Crypto Price API** - Cryptocurrency price tracking
+- **Cache Management API** - Intelligent caching strategies, multiple backends
 
 ### 🎨 Media & Content
 - **Image Storage API** - Image upload and management
 - **QR Code Generator API** - QR code creation
 - **URL Shortener API** - URL shortening service
+- **PDF Generation API** - Document conversion, manipulation, templates
+- **File Compression API** - Data compression, multiple formats
 
 ### 🏫 Education & Productivity
 - **AI Code Explainer API** - Code explanation and analysis
@@ -60,16 +67,54 @@ This repository contains a diverse set of production-ready APIs designed for var
 ### 🎮 Entertainment & Tools
 - **Weather API Wrapper** - Weather data aggregation
 - **DevTools API** - Development utilities
+- **Backup Service API** - Data backup, restore, archival
 
-## 🛠️ Technology Stack
+## 🌟 Featured APIs
 
-- **Framework**: FastAPI with Python
-- **Async Support**: Full async/await implementation
-- **Data Validation**: Pydantic models
-- **Documentation**: Auto-generated OpenAPI/Swagger docs
-- **CORS**: Cross-origin resource sharing
-- **Error Handling**: Comprehensive error management
-- **WebSocket**: Real-time communication where needed
+### � Email Service API
+**Tech Stack**: FastAPI, SMTP, background tasks, template engine  
+**Features**: Transactional emails, HTML templates, campaign management, tracking analytics  
+**Use Cases**: User notifications, marketing campaigns, transactional emails, newsletters
+
+### 📱 SMS Gateway API
+**Tech Stack**: FastAPI, multiple SMS providers, OTP generation, background tasks  
+**Features**: SMS sending, OTP verification, template management, bulk messaging, delivery tracking  
+**Use Cases**: User authentication, notifications, alerts, marketing campaigns
+
+### 📄 PDF Generation API
+**Tech Stack**: FastAPI, PDF libraries, template processing, file management  
+**Features**: Document generation, merging, splitting, conversion, templates, compression  
+**Use Cases**: Invoice generation, reports, certificates, document automation
+
+### 🗜️ File Compression API
+**Tech Stack**: FastAPI, multiple compression formats, background processing  
+**Features**: ZIP, TAR.GZ, 7Z compression, batch processing, password protection, job management  
+**Use Cases**: File archiving, data compression, backup preparation, storage optimization
+
+### 💱 Currency Exchange API
+**Tech Stack**: FastAPI, real-time data, portfolio management, alerts  
+**Features**: Real-time rates, currency conversion, historical data, rate alerts, portfolio tracking  
+**Use Cases**: Financial applications, e-commerce, currency conversion, investment tracking
+
+### ✅ Data Validation API
+**Tech Stack**: FastAPI, regex patterns, schema validation, file validation  
+**Features**: Input validation, batch validation, schema validation, file validation, custom rules  
+**Use Cases**: Form validation, data processing, API input validation, data quality assurance
+
+### 🗄️ Cache Management API
+**Tech Stack**: FastAPI, multiple backends, eviction strategies, async operations  
+**Features**: Memory/Redis caching, LRU/LFU strategies, TTL management, cache warming, statistics  
+**Use Cases**: Performance optimization, data caching, session management, API response caching
+
+### 💾 Backup Service API
+**Tech Stack**: FastAPI, file operations, compression, encryption, scheduling  
+**Features**: Full/incremental backups, multiple storage types, encryption, scheduling, restore capabilities  
+**Use Cases**: Data protection, disaster recovery, automated backups, system maintenance
+
+### 🎯 AR/VR 3D Model Rendering API
+**Tech Stack**: FastAPI, WebSocket, asyncio, pydantic  
+**Features**: 3D model creation, scene composition, high-quality rendering, AR sessions  
+**Use Cases**: E-commerce visualization, architecture, gaming, education
 
 ## 📁 Project Structure
 
@@ -161,40 +206,29 @@ response = requests.post("http://localhost:8000/api/scenes", json=scene_data)
 - Follow consistent naming conventions
 - Include usage examples in README
 
-## 🌟 Featured APIs
+## 🛠️ Technology Stack
 
-### 🎯 AR/VR 3D Model Rendering API
-**Tech Stack**: FastAPI, WebSocket, asyncio, pydantic  
-**Features**: 3D model creation, scene composition, high-quality rendering, AR sessions  
-**Use Cases**: E-commerce visualization, architecture, gaming, education
-
-### ⚛️ Quantum Computing Simulation API
-**Tech Stack**: FastAPI, NumPy, complex numbers, gate matrices  
-**Features**: Quantum circuits, Grover's algorithm, QFT, VQE optimization  
-**Use Cases**: Quantum computing research, education, algorithm testing
-
-### 🛡️ AI Code Review API
-**Tech Stack**: FastAPI, AST parsing, regex patterns, background tasks  
-**Features**: Security analysis, performance issues, style violations, CWE mapping  
-**Use Cases**: CI/CD integration, code quality monitoring, security audits
-
-### 🚁 Drone Flight Control API
-**Tech Stack**: FastAPI, WebSocket, asyncio, GPS calculations  
-**Features**: Fleet management, real-time telemetry, flight planning, safety systems  
-**Use Cases**: Agriculture, surveying, delivery, surveillance, emergency response
-
-### 🔐 Biometric Authentication API
-**Tech Stack**: FastAPI, base64 encoding, liveness detection, security policies  
-**Features**: Multi-modal biometrics, liveness detection, audit logging, account security  
-**Use Cases**: Enterprise access control, mobile authentication, banking, healthcare
+- **Framework**: FastAPI with Python
+- **Async Support**: Full async/await implementation
+- **Data Validation**: Pydantic models
+- **Documentation**: Auto-generated OpenAPI/Swagger docs
+- **CORS**: Cross-origin resource sharing
+- **Error Handling**: Comprehensive error management
+- **WebSocket**: Real-time communication where needed
+- **Background Tasks**: Asyncio for long-running operations
+- **File Operations**: Multiple file format support
+- **Security**: JWT, encryption, input validation
+- **Storage**: Multiple backend support (local, cloud)
+- **Monitoring**: Comprehensive logging and metrics
 
 ## 📊 Statistics
 
-- **Total APIs**: 32 unique implementations
-- **Technology Coverage**: AR/VR, AI, Quantum Computing, IoT, Blockchain, Biometrics
+- **Total APIs**: 40 unique implementations
+- **Technology Coverage**: AR/VR, AI, Quantum Computing, IoT, Blockchain, Biometrics, Communication, Security, Business, Analytics, Media, Education, Health, Entertainment
 - **Documentation**: 100% coverage with examples
 - **Production Ready**: All APIs include error handling and configuration
 - **Real-time Features**: WebSocket support where applicable
+- **New Additions**: Email Service, SMS Gateway, PDF Generation, File Compression, Currency Exchange, Data Validation, Cache Management, Backup Service
 
 ## 🤝 Contributing
 
@@ -226,7 +260,7 @@ For questions, issues, or contributions:
 
 ## 🏷️ Tags
 
-`fastapi` `python` `api` `rest` `async` `websocket` `ar` `vr` `quantum` `ai` `blockchain` `iot` `biometrics` `drone` `authentication` `collaboration` `e-commerce` `analytics` `education` `health` `fitness`
+`fastapi` `python` `api` `rest` `async` `websocket` `ar` `vr` `quantum` `ai` `blockchain` `iot` `biometrics` `drone` `authentication` `collaboration` `e-commerce` `analytics` `education` `health` `fitness` `email` `sms` `pdf` `compression` `currency` `validation` `cache` `backup`
 
 ---
 
